@@ -39,15 +39,21 @@ write_files:
       AllowUsers core
       PasswordAuthentication no
       ChallengeResponseAuthentication no
-      #AuthorizedKeysCommand /bin/ssh-auth -server http://127.0.0.1:5000 -user %u
+      AuthorizedKeysCommand /auth/ssh-auth -server http://192.168.5.63:5000 -login admin -pass test -hostname b48620eb9007 -user admin
+      AuthorizedKeysCommandUser root
 
 coreos:
   units:
-    - name: docker.service
-      enable: true
+    - name: ssh-auth.service
       command: start
+      content: |     
+        [Unit]
+        Description=ssh-auth
 
-runcmd:
-  - /usr/bin/docker run --name ssh-auth -v /bin/ssh-auth:/bin/ssh-auth pasientskyhosting/ps-ssh-auth:latest
-  - /bin/chmod 0755 /bin/ssh-auth
+        [Service]
+        ExecStart=-/bin/rm -rf /auth
+        ExecStart=/bin/mkdir /auth
+        ExecStart=/bin/wget -O /auth/ssh-auth https://github.com/pasientskyhosting/ps-ssh-auth/releases/download/v1.0/ssh-auth
+        ExecStart=/bin/chmod 0755 /auth/ssh-auth
+        Type=oneshot
 ```
