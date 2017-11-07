@@ -51,14 +51,14 @@ func main() {
 
 	if err != nil {
 		println(err)
-    os.Exit(0)
+		os.Exit(0)
 	}
 
 	result, err := res.ToString()
 
 	if isJSON(result) != true {
 		println("Did not get a JSON response")
-    os.Exit(0)
+		os.Exit(0)
 	}
 
 	auth_token := gjson.Get(result, "result.value.token")
@@ -69,19 +69,19 @@ func main() {
 			WithHeader("Authorization", auth_token.String()).
 			Get(server+"/machine/authitem/ssh", map[string]string{
 				"hostname": hostname,
-				"user": user,
+				"user":     user,
 			})
 
 		if err != nil {
 			println(err)
-      os.Exit(0)
+			os.Exit(0)
 		}
 
 		result, err := res.ToString()
 
 		if isJSON(result) != true {
 			println("Did not get a JSON response")
-      os.Exit(0)
+			os.Exit(0)
 		}
 
 		keys := gjson.Get(result, "result.value.ssh")
