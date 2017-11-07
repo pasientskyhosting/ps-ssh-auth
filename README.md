@@ -13,7 +13,11 @@ The following config options is currently available for ssh-auth
 
 Usage of ssh-auth:
   -hostname string
-    	Hostname of server to validate (default "Andreas-MacBook-Pro.local")
+    	Hostname of server to validate (default "localhost")
+  -login string
+    	Login username to PrivacyIDEA (default "admin")
+  -pass string
+    	Login password to PrivacyIDEA (default "test")
   -server string
     	URL to PrivacyIDEA server. (default "http://127.0.0.1:5000")
   -user string
@@ -31,7 +35,6 @@ write_files:
     permissions: 0600
     owner: root:root
     content: |
-      # Use most defaults for sshd configuration.
       UsePrivilegeSeparation sandbox
       Subsystem sftp internal-sftp
       UseDNS no
@@ -39,7 +42,7 @@ write_files:
       AllowUsers core
       PasswordAuthentication no
       ChallengeResponseAuthentication no
-      AuthorizedKeysCommand /auth/ssh-auth -server http://192.168.5.63:5000 -login admin -pass test -hostname b48620eb9007 -user admin
+      AuthorizedKeysCommand /auth/ssh-auth -server http://192.168.5.63:5000 -login admin -pass test -user %u
       AuthorizedKeysCommandUser root
 
 coreos:
@@ -54,6 +57,6 @@ coreos:
         ExecStart=-/bin/rm -rf /auth
         ExecStart=/bin/mkdir /auth
         ExecStart=/bin/wget -O /auth/ssh-auth https://github.com/pasientskyhosting/ps-ssh-auth/releases/download/v1.0/ssh-auth
-        ExecStart=/bin/chmod 0755 /auth/ssh-auth
+        ExecStart=/bin/chmod 0700 /auth/ssh-auth
         Type=oneshot
 ```
