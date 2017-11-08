@@ -16,7 +16,7 @@ var (
 	auth_token string
 	login      string
 	pass       string
-  unsafetls  bool
+	unsafetls  bool
 )
 
 func isJSON(s string) bool {
@@ -37,26 +37,27 @@ func init() {
 	flag.StringVar(&user, "user", "", "Username to validate")
 	flag.StringVar(&login, "login", "admin", "Login username to PrivacyIDEA")
 	flag.StringVar(&pass, "pass", "test", "Login password to PrivacyIDEA")
-  flag.BoolVar(&unsafetls, "unsafe", false, "Do not do SSL/TLS certificate check")
+	flag.BoolVar(&unsafetls, "unsafe", false, "Do not do SSL/TLS certificate check")
 	flag.Parse()
 }
 
 func main() {
 	httpclient.Defaults(httpclient.Map{
-		httpclient.OPT_USERAGENT: "SSH-Auth/1.0",
+		httpclient.OPT_USERAGENT: "SSH-Auth/1.1",
+    httpclient.OPT_TIMEOUT: 5,
+    httpclient.OPT_CONNECTTIMEOUT: 5,
 	})
 
 	res, err := httpclient.
 		Begin().
-		WithOption(httpclient.OPT_TIMEOUT, 10).
-    WithOption(httpclient.OPT_UNSAFE_TLS, unsafetls).
+		WithOption(httpclient.OPT_UNSAFE_TLS, unsafetls).
 		Post(server+"/auth", map[string]string{
 			"username": login,
 			"password": pass,
 		})
 
 	if err != nil {
-    fmt.Print(err)
+		fmt.Print(err)
 		os.Exit(1)
 	}
 
@@ -67,15 +68,15 @@ func main() {
 		os.Exit(1)
 	}
 
-  // Get auth token for privacyIDEA
+	// Get auth token for privacyIDEA
 	auth_token := gjson.Get(result, "result.value.token")
 
 	if auth_token.Exists() {
 
-    // Get SSH keys for the machine and user
+		// Get SSH keys for the machine and user
 		res, err := httpclient.
 			Begin().
-      WithOption(httpclient.OPT_UNSAFE_TLS, unsafetls).
+			WithOption(httpclient.OPT_UNSAFE_TLS, unsafetls).
 			WithHeader("Authorization", auth_token.String()).
 			Get(server+"/machine/authitem/ssh", map[string]string{
 				"hostname": hostname,
@@ -83,7 +84,7 @@ func main() {
 			})
 
 		if err != nil {
-      fmt.Print(err)
+			fmt.Print(err)
 			os.Exit(1)
 		}
 

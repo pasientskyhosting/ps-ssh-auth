@@ -22,7 +22,7 @@ Usage of ssh-auth:
   -server string
     	URL to PrivacyIDEA server. (default "http://127.0.0.1:5000")
   -unsafe
-    	Do not do SSL/TLS certificate check
+    	Do not do SSL/TLS certificate check (default False)
   -user string
     	Username to validate
 ```
