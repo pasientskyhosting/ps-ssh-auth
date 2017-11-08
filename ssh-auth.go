@@ -16,6 +16,7 @@ var (
 	auth_token string
 	login      string
 	pass       string
+  unsafetls  bool
 )
 
 func isJSON(s string) bool {
@@ -31,11 +32,12 @@ func init() {
 	}
 
 	// Define inputs
-	flag.StringVar(&server, "server", "http://127.0.0.1:5000", "URL to PrivacyIDEA server.")
+	flag.StringVar(&server, "server", "https://127.0.0.1:5000", "URL to PrivacyIDEA server.")
 	flag.StringVar(&hostname, "hostname", name, "Hostname of server to validate")
 	flag.StringVar(&user, "user", "", "Username to validate")
 	flag.StringVar(&login, "login", "admin", "Login username to PrivacyIDEA")
 	flag.StringVar(&pass, "pass", "test", "Login password to PrivacyIDEA")
+  flag.BoolVar(&unsafetls, "unsafe", false, "Do not do SSL/TLS certificate check")
 	flag.Parse()
 }
 
@@ -47,12 +49,14 @@ func main() {
 	res, err := httpclient.
 		Begin().
 		WithOption(httpclient.OPT_TIMEOUT, 10).
+    WithOption(httpclient.OPT_UNSAFE_TLS, unsafetls).
 		Post(server+"/auth", map[string]string{
 			"username": login,
 			"password": pass,
 		})
 
 	if err != nil {
+    fmt.Print(err)
 		os.Exit(1)
 	}
 
@@ -71,6 +75,7 @@ func main() {
     // Get SSH keys for the machine and user
 		res, err := httpclient.
 			Begin().
+      WithOption(httpclient.OPT_UNSAFE_TLS, unsafetls).
 			WithHeader("Authorization", auth_token.String()).
 			Get(server+"/machine/authitem/ssh", map[string]string{
 				"hostname": hostname,
@@ -78,6 +83,7 @@ func main() {
 			})
 
 		if err != nil {
+      fmt.Print(err)
 			os.Exit(1)
 		}
 

@@ -21,6 +21,8 @@ Usage of ssh-auth:
     	Login password to PrivacyIDEA (default "test")
   -server string
     	URL to PrivacyIDEA server. (default "http://127.0.0.1:5000")
+  -unsafe
+    	Do not do SSL/TLS certificate check
   -user string
     	Username to validate
 ```
@@ -58,7 +60,7 @@ coreos:
         ExecStart=-/bin/rm -rf /auth
         ExecStart=/bin/mkdir /auth
         ExecStart=/bin/wget -O /auth/ssh-auth https://github.com/pasientskyhosting/ps-ssh-auth/releases/download/v1.1/ssh-auth
-        ExecStart=/bin/chmod 0700 /auth/ssh-auth
+        ExecStart=/bin/chmod -R 0700 /auth
         Type=oneshot
 ```
 
