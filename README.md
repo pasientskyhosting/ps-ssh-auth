@@ -1,9 +1,10 @@
 ssh-auth
 ========
 
-> privacyIDEA is an open solution for strong two-factor authentication like OTP tokens, SMS, smartphones or SSH keys. Using privacyIDEA you can enhance your existing applications like local login (PAM, Windows Credential Provider), VPN, remote access, SSH connections, access to web sites or web portals with a second factor during authentication. Thus boosting the security of your existing applications.
+ssh-auth is a simple little Go program that connects to a privacyIDEA server and asks for the users public ssh keys.
+This way you can centralize the management of all user's SSH keys within privacyIDEA.
 
-ssh-auth is a simple little Go program that connects to a privacyIDEA server and asks for SSH auth keys for the machine. This is used to centralize the tokens and make the user management easier.
+> privacyIDEA is an open solution for strong two-factor authentication like OTP tokens, SMS, smartphones or SSH keys. Using privacyIDEA you can enhance your existing applications like local login (PAM, Windows Credential Provider), VPN, remote access, SSH connections, access to web sites or web portals with a second factor during authentication. Thus boosting the security of your existing applications.
 
 Config options
 --------------
@@ -42,7 +43,7 @@ write_files:
       AllowUsers core
       PasswordAuthentication no
       ChallengeResponseAuthentication no
-      AuthorizedKeysCommand /auth/ssh-auth -server http://192.168.5.63:5000 -login admin -pass test -user %u
+      AuthorizedKeysCommand /auth/ssh-auth -server https://192.168.5.63:5000 -login admin -pass test -user %u
       AuthorizedKeysCommandUser root
 
 coreos:
@@ -56,7 +57,13 @@ coreos:
         [Service]
         ExecStart=-/bin/rm -rf /auth
         ExecStart=/bin/mkdir /auth
-        ExecStart=/bin/wget -O /auth/ssh-auth https://github.com/pasientskyhosting/ps-ssh-auth/releases/download/v1.0/ssh-auth
+        ExecStart=/bin/wget -O /auth/ssh-auth https://github.com/pasientskyhosting/ps-ssh-auth/releases/download/v1.1/ssh-auth
         ExecStart=/bin/chmod 0700 /auth/ssh-auth
         Type=oneshot
 ```
+
+Todo:
+--------
+* Add option for multiple privacyIDEA servers
+* Reject non HTTPS requests?
+* Add PAM module for OTP TOKEN valiation

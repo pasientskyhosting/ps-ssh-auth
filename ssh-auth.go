@@ -21,14 +21,13 @@ var (
 func isJSON(s string) bool {
 	var js map[string]interface{}
 	return json.Unmarshal([]byte(s), &js) == nil
-
 }
 
 func init() {
 	// Get hostname of server automatically
 	name, err := os.Hostname()
 	if err != nil {
-		fmt.Print("Cannot get hostname of server. Please use the flag")
+		fmt.Print("Cannot get hostname of server. Please use the commandline to hardcode it")
 	}
 
 	// Define inputs
@@ -42,7 +41,7 @@ func init() {
 
 func main() {
 	httpclient.Defaults(httpclient.Map{
-		httpclient.OPT_USERAGENT: "SSH-Auth",
+		httpclient.OPT_USERAGENT: "SSH-Auth/1.0",
 	})
 
 	res, err := httpclient.
@@ -54,20 +53,22 @@ func main() {
 		})
 
 	if err != nil {
-		fmt.Print(err)
 		os.Exit(1)
 	}
 
 	result, err := res.ToString()
 
 	if isJSON(result) != true {
-		fmt.Print("Did not get a JSON response")
-		os.Exit(2)
+		// did not get a json response from the server
+		os.Exit(1)
 	}
 
+  // Get auth token for privacyIDEA
 	auth_token := gjson.Get(result, "result.value.token")
 
 	if auth_token.Exists() {
+
+    // Get SSH keys for the machine and user
 		res, err := httpclient.
 			Begin().
 			WithHeader("Authorization", auth_token.String()).
@@ -77,15 +78,14 @@ func main() {
 			})
 
 		if err != nil {
-			fmt.Print(err)
-			os.Exit(3)
+			os.Exit(1)
 		}
 
 		result, err := res.ToString()
 
 		if isJSON(result) != true {
-			fmt.Print("Did not get a JSON response")
-			os.Exit(4)
+			// did not get a json response from the server
+			os.Exit(1)
 		}
 
 		keys := gjson.Get(result, "result.value.ssh")
