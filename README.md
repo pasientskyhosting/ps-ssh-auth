@@ -40,12 +40,14 @@ write_files:
     content: |
       UsePrivilegeSeparation sandbox
       Subsystem sftp internal-sftp
+      ClientAliveInterval 180
       UseDNS no
+
       PermitRootLogin no
-      AllowUsers core
       PasswordAuthentication no
       ChallengeResponseAuthentication no
-      AuthorizedKeysCommand /auth/ssh-auth -server https://192.168.5.63:5000 -login admin -pass test -user %u
+      LogLevel DEBUG3
+      AuthorizedKeysCommand /auth/ssh-auth -server https://192.168.1.45:5000 -autocreate -unsafe -login admin -pass test -user %u
       AuthorizedKeysCommandUser root
 
 coreos:
